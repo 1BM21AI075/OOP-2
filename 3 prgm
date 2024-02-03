@@ -1,0 +1,46 @@
+import threading
+import time
+import random
+import queue  # Import the queue module
+
+def generate_random_integer():
+    while True:
+        value = random.randint(1, 100)
+        print(f"Generated: {value}")
+        if value % 2 == 0:
+            even_queue.put(value)
+        else:
+            odd_queue.put(value)
+        time.sleep(1)
+
+def compute_square():
+    while True:
+        value = even_queue.get()
+        square_value = value ** 2
+        print(f"Square: {square_value}")
+        even_queue.task_done()
+
+def compute_cube():
+    while True:
+        value = odd_queue.get()
+        cube_value = value ** 3
+        print(f"Cube: {cube_value}")
+        odd_queue.task_done()
+
+# Queue to store even and odd numbers separately
+even_queue = queue.Queue()
+odd_queue = queue.Queue()
+
+# Create and start threads
+thread1 = threading.Thread(target=generate_random_integer)
+thread2 = threading.Thread(target=compute_square)
+thread3 = threading.Thread(target=compute_cube)
+
+thread1.start()
+thread2.start()
+thread3.start()
+
+# Wait for threads to finish (This is optional, you can remove if the threads are meant to run indefinitely)
+thread1.join()
+thread2.join()
+thread3.join()
