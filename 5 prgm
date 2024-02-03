@@ -1,0 +1,38 @@
+import threading
+import time
+
+# Use a Lock for synchronization
+lock = threading.Lock()
+
+# Shared variable to control the alternating printing
+current_value = 1
+
+def function_A():
+    global current_value
+    for _ in range(5):
+        with lock:
+            print(current_value, end=' ')
+            current_value += 1
+        time.sleep(0.2)  # Simulate a time-consuming task
+
+def function_B():
+    global current_value
+    for _ in range(5):
+        with lock:
+            print(chr(ord('A') + current_value - 1), end=' ')
+            current_value += 1
+        time.sleep(0.2)  # Simulate a time-consuming task
+
+# Create threads
+thread_A = threading.Thread(target=function_A)
+thread_B = threading.Thread(target=function_B)
+
+# Start threads
+thread_A.start()
+thread_B.start()
+
+# Wait for threads to finish
+thread_A.join()
+thread_B.join()
+
+# Output may vary due to threading behavior, but you will see an alternating sequence of numbers and letters.
